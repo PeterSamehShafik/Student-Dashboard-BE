@@ -94,7 +94,7 @@ export const deleteMany = asyncHandler(
         const publicIds = users.map(user => user.profilePic.public_id);
         for (const publicId of publicIds) {
             if (publicId) {
-                await cloudinary.uploader.destroy(publicId).catch(error => {
+                cloudinary.uploader.destroy(publicId).catch(error => {
                     console.log(`Error deleting image with public_id ${publicId}:`, error);
                 });
             }
