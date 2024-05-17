@@ -14,7 +14,9 @@ import userModel from '../DB/models/user.model.js'
 export const appRouter = (app) => {
     app.use(express.json({}));
     app.use(express.urlencoded({ extended: true }))
-    app.use(cors({}));
+    app.use(cors({
+        origin: '*'
+    }));
 
     //Returns request endpoint and time taken to execute it
     if (process.env.MODE === 'DEV') {
