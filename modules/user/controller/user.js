@@ -25,16 +25,35 @@ export const getUsers = asyncHandler(
         let searchQuery = {};
         if (search) {
             if (searchBy === 'name') {
-                searchQuery = {
-                    $or: [
-                        { firstName: { $regex: search, $options: 'i' } },
-                        { lastName: { $regex: search, $options: 'i' } }
-                    ]
+                // Remove leading and trailing whitespace
+                const trimmedSearch = search.trim();
+
+                // Split the trimmed search string by one or more whitespace characters
+                const nameParts = trimmedSearch.split(/\s+/);
+
+                if (nameParts.length === 1) {
+                    // Single name scenario: search in both firstName and lastName
+                    searchQuery = {
+                        $or: [
+                            { firstName: { $regex: nameParts[0], $options: 'i' } },
+                            { lastName: { $regex: nameParts[0], $options: 'i' } }
+                        ]
+                    };
+                } else if (nameParts.length > 1) {
+                    // Full name scenario: search first name and last name separately
+                    searchQuery = {
+                        $and: [
+                            { firstName: { $regex: `^${nameParts[0]}`, $options: 'i' } },
+                            { lastName: { $regex: `^${nameParts.slice(1).join(" ")}`, $options: 'i' } }
+                        ]
+                    };
                 }
             } else {
-                searchQuery[searchBy] = { $regex: search, $options: 'i' };
+                // Handle other search criteria
+                searchQuery[searchBy] = { $regex: `^${search}`, $options: 'i' };
             }
         }
+
 
         const students = await userModel.find(searchQuery).limit(limit).skip(skip).sort(sorting);
         const totalStudents = await userModel.find(searchQuery).countDocuments()

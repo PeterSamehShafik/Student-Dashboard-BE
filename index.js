@@ -9,5 +9,5 @@ const port = process.env.PORT || 3000;
 appRouter(app);
 
 app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+  console.log(`Server is running on Port: ${port}`);
 });
